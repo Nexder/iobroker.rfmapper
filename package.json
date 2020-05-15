@@ -1,26 +1,40 @@
 {
-  "name": "iobroker.rfmapper",
-  "version": "0.0.1",
-  "description": "rfmapper",
+  "_from": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+  "_id": "iobroker.rfmapper@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-6FclYqAaRya3kj28IDnLVKViivoK5WxC0MzDRwcZV0/islgiYR1wEQe0CE2t+NK+03iiexpWTzNdiG/EYxv3+w==",
+  "_location": "/iobroker.rfmapper",
+  "_phantomChildren": {
+    "@types/node": "14.0.1"
+  },
+  "_requested": {
+    "type": "remote",
+    "raw": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+    "rawSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+    "saveSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+    "fetchSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+  "_shasum": "4984b707bf9c2098aa94a1001b71b55ceb3f43ff",
+  "_spec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+  "_where": "/",
   "author": {
     "name": "Nexder",
     "email": "info@ctcomputertechnik.de"
   },
-  "homepage": "https://github.com/Nexder/ioBroker.rfmapper",
-  "license": "MIT",
-  "keywords": [
-    "ioBroker",
-    "template",
-    "Smart Home",
-    "home automation"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Nexder/ioBroker.rfmapper"
+  "bugs": {
+    "url": "https://github.com/Nexder/ioBroker.rfmapper/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "@iobroker/adapter-core": "^2.2.1"
   },
+  "deprecated": false,
+  "description": "rfmapper",
   "devDependencies": {
     "@iobroker/testing": "^2.0.2",
     "@types/chai": "^4.2.9",
@@ -41,17 +55,27 @@
     "sinon": "^9.0.0",
     "sinon-chai": "^3.5.0"
   },
+  "homepage": "https://github.com/Nexder/ioBroker.rfmapper",
+  "keywords": [
+    "ioBroker",
+    "template",
+    "Smart Home",
+    "home automation"
+  ],
+  "license": "MIT",
   "main": "main.js",
+  "name": "iobroker.rfmapper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nexder/ioBroker.rfmapper.git"
+  },
   "scripts": {
+    "lint": "eslint",
+    "test": "npm run test:js && npm run test:package",
+    "test:integration": "mocha test/integration --exit",
     "test:js": "mocha --opts test/mocha.custom.opts",
     "test:package": "mocha test/package --exit",
-    "test:unit": "mocha test/unit --exit",
-    "test:integration": "mocha test/integration --exit",
-    "test": "npm run test:js && npm run test:package",
-    "lint": "eslint"
+    "test:unit": "mocha test/unit --exit"
   },
-  "bugs": {
-    "url": "https://github.com/Nexder/ioBroker.rfmapper/issues"
-  },
-  "readmeFilename": "README.md"
+  "version": "0.0.1"
 }
