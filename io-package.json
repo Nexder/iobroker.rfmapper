@@ -1,7 +1,7 @@
 {
 	"common": {
 		"name": "rfmapper",
-		"version": "0.0.1",
+		"version": "0.0.4",
 		"news": 
 		{
 			"0.0.1": 
@@ -45,7 +45,7 @@
 		},
 		"authors": ["Nexder <info@ctcomputertechnik.de>"],
 		"keywords": ["ioBroker",
-		"SonOff RF Bridge",
+		"SonOFF RF Bridge",
 		"Tasmota",
 		"Smart Home",
 		"home automation"],
@@ -68,7 +68,7 @@
 		}]
 	},
 	"native": {
-		"devices": [],
+		"devices": []
 	},
 	"objects": [],
 	"instanceObjects": []
