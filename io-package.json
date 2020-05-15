@@ -1,0 +1,75 @@
+{
+	"common": {
+		"name": "rfmapper",
+		"version": "0.0.1",
+		"news": 
+		{
+			"0.0.1": 
+			{
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"zh-cn": "首次出版"
+			}
+		},
+		"title": "RF Mapper",
+		"titleLang": {
+			"en": "RF Mapper",
+			"de": "RF Mapper",
+			"ru": "RF Mapper",
+			"pt": "RF Mapper",
+			"nl": "RF Mapper",
+			"fr": "RF Mapper",
+			"it": "RF Mapper",
+			"es": "RF Mapper",
+			"pl": "RF Mapper",
+			"zh-cn": "RF Mapper"
+		},
+		"desc": {
+			"en": "rfmapper",
+			"de": "rfmapper",
+			"ru": "rfmapper",
+			"pt": "rfmapper",
+			"nl": "rfmapper",
+			"fr": "rfmapper",
+			"it": "rfmapper",
+			"es": "rfmapper",
+			"pl": "rfmapper",
+			"zh-cn": "rfmapper"
+		},
+		"authors": ["Nexder <info@ctcomputertechnik.de>"],
+		"keywords": ["ioBroker",
+		"SonOff RF Bridge",
+		"Tasmota",
+		"Smart Home",
+		"home automation"],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "main.js",
+		"icon": "admin/rfmapper.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/Nexder/ioBroker.rfmapper/master/admin/rfmapper.png",
+		"readme": "https://github.com/Nexder/ioBroker.rfmapper/blob/master/README.md",
+		"loglevel": "info",
+		"mode": "daemon",
+		"type": "iot-systems",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "push",
+		"materialize": true,
+		"dependencies": [{
+			"js-controller": ">=1.4.2"
+		}]
+	},
+	"native": {
+		"devices": [],
+	},
+	"objects": [],
+	"instanceObjects": []
+}
