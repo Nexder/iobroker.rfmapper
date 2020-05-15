@@ -1,153 +1,210 @@
 <html>
 
-<head>
+<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
 
-    <!-- Load ioBroker scripts and styles-->
-    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+<script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
-    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<style>
+    .number {
+        width: 70px
+    }
+</style>
 
-    <script type="text/javascript" src="../../js/translate.js"></script>
-    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
 
-    <!-- Load our own files -->
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <script type="text/javascript" src="words.js"></script>
+<script type="text/javascript">
+    function showHideSettings() {
+        if ($('#webInstance').val()) {
+            $('.no-if-extend').hide();
+        } else {
+            $('.no-if-extend').show();
+            if ($('#secure').prop('checked')) {
+                $('#_certPublic').show();
+                $('#_certPrivate').show();
+                $('#_certChained').show();
+                $('.le-settings').show();
 
- <script type="text/javascript">
-    var devices = [];
-
-    function setValue(id, value, onChange) 
-	{
-        var $value = $('#' + id + '.value');
-        if ($value.attr('type') === 'checkbox') 
-		{
-            $value.prop('checked', value).change(function() 
-			{
-                onChange();
-            });
-        } 
-		else 
-		{
-            $value.val(value).change(function() 
-			{
-                onChange();
-            }).keyup(function() 
-			{
-                // Check that only numbers entered
-                if ($(this).hasClass('number')) 
-				{
-                    var val = $(this).val();
-                    if (val) 
-					{
-                        var newVal = '';
-                        for (var i = 0; i < val.length; i++) 
-						{
-                            if (val[i] >= '0' && val[i] <= '9') 
-							{
-                                newVal += val[i];
-                            }
-                        }
-                        if (val != newVal) $(this).val(newVal);
+                if ($('#leEnabled').prop('checked')) {
+                    $('.le-sub-settings').show();
+                    if ($('#leUpdate').prop('checked')) {
+                        $('.le-sub-settings-update').show();
+                    } else {
+                        $('.le-sub-settings-update').hide();
                     }
+                } else {
+                    $('.le-sub-settings').hide();
                 }
-
-                onChange();
-            });
+            } else {
+                $('#_certPublic').hide();
+                $('#_certPrivate').hide();
+                $('#_certChained').hide();
+                $('#auth').prop('checked', false);
+                $('.le-settings').hide();
+            }
+            if ($('#auth').prop('checked')) {
+                $('#defaultUser').val('admin');
+                $('.defaultUser').hide();
+            } else {
+                $('.defaultUser').show();
+            }
+        }
+        if ($('#dataSource').val()) {
+            $('.allDatapoints').show();
+        } else {
+            $('.allDatapoints').hide();
         }
     }
 
     // the function loadSettings has to exist ...
-    function load(settings, onChange) 
-	{
+    function load(settings, onChange) {
         if (!settings) return;
-		
-		if (settings.SnifferPath === undefined) {
-            settings.SnifferPath = '/home/pi/433Utils/RPi_utils/RFSniffer';
-        }
-		if (settings.CodeSendPath === undefined) {
-            settings.CodeSendPath = '/home/pi/433Utils/RPi_utils/codesend';
-        }
 
-        devices = settings.devices || [];
+        if (!settings.lePort) settings.lePort = 80;
 
-        for (var key in settings) 
-		{
-            if (settings.hasOwnProperty(key)) 
-			{
-                setValue(key, settings[key], onChange);
+        getIPs(function(ips) {
+            for (var i = 0; i < ips.length; i++) {
+                $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
             }
+            $('#bind.value').val(settings.bind);
+        });
+
+        $('.value').each(function () {
+            var key = $(this).attr('id');
+            // example: select elements with id=key and class=value and insert value
+            if ($('#' + key + '.value').attr('type') === 'checkbox') {
+                $('#' + key + '.value').prop('checked', settings[key]).on('change', function() {
+                    showHideSettings($(this).attr('id'));
+                    onChange();
+                });
+            } else {
+                $('#' + key + '.value').val(settings[key]).on('change', function() {
+                    if (key === 'webInstance') showHideSettings();
+                    if (key === 'dataSource') showHideSettings();
+                    onChange();
+                }).on('keyup', function() {
+                    onChange();
+                });
+            }
+        });
+
+
+        fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
+        fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
+        fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
+        fillSelectCertificates('#certChained', 'chained', settings.certChained);
+        fillUsers('#defaultUser', settings.defaultUser);
+
+        if (typeof getExtendableInstances !== 'undefined') {
+            getExtendableInstances(function (result) {
+                if (result) {
+                    var text = '';
+                    for (var r = 0; r < result.length; r++) {
+                        var name = result[r]._id.substring('system.adapter.'.length);
+                        text += '<option value="' + name + '" ' + (settings.webInstance === name ? 'selected' : '') + '>' + name + '</option>';
+                    }
+                    $('#webInstance').append(text);
+                    showHideSettings();
+                }
+            });
+        } else {
+            showHideSettings();
         }
 
-        values2table('values', devices, onChange);
+        getHistoryInstances(settings);
 
         onChange(false);
     }
 
-    function save(callback) 
-	{
-		var obj = {};
-		$('.value').each(function () 
-		{
-			var $this = $(this);
-			if ($this.attr('type') === 'checkbox') 
-			{
-				obj[$this.attr('id')] = $this.prop('checked');
-			}
-			else 
-			{
-				obj[$this.attr('id')] = $this.val();
-			}
-		});
+    function getHistoryInstances(settings) {
+        socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, function (err, doc) {
+            if (err) {
+                console.error(err);
+            } else {
+                if (doc.rows.length) {
+                    var result = [];
+                    for (var i = 0; i < doc.rows.length; i++) {
+                        result.push(doc.rows[i].value);
+                    }
+                    result = result.filter(function (adp) {
+                        return adp && adp.common && adp.common.getHistory;
+                    });
 
-		// Get edited table
-		obj.devices = table2values('values');
+                    var text = '';
+                    for (var r = 0; r < result.length; r++) {
+                        var name = result[r]._id.substring('system.adapter.'.length);
+                        text += '<option value="' + name + '" ' + (settings.dataSource === name ? 'selected' : '') + '>' + name + '</option>';
+                    }
+                    $('#dataSource').append(text);
+                    showHideSettings();
+                }
+            }
+        });
+    }
 
-		callback(obj);
+    // ... and the function save has to exist.
+    // you have to make sure the callback is called with the settings object as first param!
+    function save(callback) {
+        var obj = {};
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+
+        if ($('#secure').prop('checked') && (!$('#certPrivate').val() || !$('#certPublic').val())) {
+            showMessage(_('Set certificates or load it first in the system settings (right top).'));
+            return;
+        }
+
+        callback(obj);
     }
 </script>
-</head>
-<body>
-<!-- you have to put your config page in a div with id adapter-container -->
-<div id="m adapter-container">
 
-    <table><tr>
-        <td><img src="rf433utils.png" width="64px" height="64px"></td>
-        <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">433Utils Bridge - adapter settings</h3></td>
-    </tr></table>
-    <h4 class="translate">Basic settings</h4>
+<!-- you have to put your config page in a div with id adapter-container -->
+<div id="adapter-container">
+
+    <table><tr><td><img src="simple-api.png"></td><td><h3 class="translate">simpleAPI adapter settings</h3></td></tr></table>
+
     <table>
-		<tr>
-			<td><label class="translate" for="SnifferPath">Path To RFSniffer:</label></td>
-			<td class="admin-icon"></td><td><input class="value" id="SnifferPath" /></td>
-		</tr>
-		<tr>
-			<td><label class="translate" for="CodeSendPath">Path To CodeSend:</label></td>
-			<td class="admin-icon"></td><td><input class="value" id="CodeSendPath" /></td>
-		</tr>
-	</table>
-    <h4 class="translate">Devices</h4>
-    <div id="values" style="width: 100%; height: calc(100% - 230px)">
-        <button class="table-button-add" style="margin-left: 10px; width: 1.5em; height: 1.5em"></button>
-        <div style="width: 100%; height: calc(100% - 30px); overflow: auto;">
-            <table class="table-values" style="width: 100%;">
-                <thead>
-                <tr>
-                    <th data-name="_index" style="width: 40px" class="translate"></th>
-                    <th data-name="id" style="width: 30%" class="translate">ID</th>
-                    <th data-name="name" style="width: 30%" class="translate">Name</th>
-                     <th data-name="codeOn" class="translate">Code-On</th>
- 					<th data-name="codeOff" class="translate">Code-Off</th>
- 					<th data-name="timer" class="translate">Timer in sec</th>
-                    <th data-buttons="delete" style="width: 40px"></th>
-                </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
+        <tr><td><label for="webInstance" class="translate">Extend WEB adapter:</label></td><td><select class="value" id="webInstance">
+            <option value=""  class="translate">none</option>
+            <option value="*" class="translate">all</option>
+        </select></td></tr>
+        <tr class="no-if-extend"><td><label for="bind"   class="translate">IP:</label></td><td>            <select class="value" id="bind"></select></td></tr>
+        <tr class="no-if-extend"><td><label for="port"   class="translate">Port:</label></td><td>          <input  class="value" id="port" size="5"  maxlength="5"/></td></tr>
+        <tr class="no-if-extend"><td><label for="secure" class="translate">Secure(HTTPS):</label></td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
+        <tr class="no-if-extend" id="_certPublic">
+            <td><label for="certPublic" class="translate">Public certificate:</label></td>
+            <td><select id="certPublic" class="value"></select></td>
+        </tr>
+        <tr class="no-if-extend" id="_certPrivate">
+            <td><label for="certPrivate" class="translate">Private certificate:</label></td>
+            <td><select id="certPrivate" class="value"></select></td>
+        </tr>
+        <tr class="no-if-extend" id="_certChained">
+            <td><label for="certChained" class="translate">Chained certificate:</label></td>
+            <td><select id="certChained" class="value"></select></td>
+        </tr>
+        <tr class="no-if-extend"><td><label for="auth" class="translate">Authentication:</label></td><td><input  class="value" id="auth" type="checkbox" /></td></tr>
+        <tr class="no-if-extend defaultUser"><td><label for="defaultUser" class="translate">Run as:</label></td><td><select class="value" id="defaultUser"></select></td></tr>
+        <tr class="no-if-extend defaultUser"><td><label for="onlyAllowWhenUserIsOwner" class="translate">Allow only when User is Owner:</label></td><td><input  class="value" id="onlyAllowWhenUserIsOwner" type="checkbox" /></td></tr>
+        <tr class="no-if-extend"><td colspan="2">&nbsp;</td></tr>
+        <tr class="no-if-extend le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
+        <tr class="no-if-extend le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input  class="value" id="leEnabled"   type="checkbox" /></td></tr>
+        <tr class="no-if-extend le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input  class="value" id="leUpdate" type="checkbox" /></td></tr>
+        <tr class="no-if-extend le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td></tr>
+        <tr><td><label for="dataSource" class="translate">Select data source:</label></td><td><select class="value" id="dataSource">
+            <option value=""  class="translate">none</option>
+        </select></td></tr>
+        <tr class="allDataPoints"><td><label for="allDatapoints" class="translate">List all datapoints:</label></td><td><input  class="value" id="allDatapoints" type="checkbox" /></td></tr>
+    </table>
 </div>
-</body>
 </html>

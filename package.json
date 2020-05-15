@@ -1,26 +1,26 @@
 {
-  "_from": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+  "_from": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
   "_id": "iobroker.rfmapper@0.0.1",
   "_inBundle": false,
-  "_integrity": "sha512-6FclYqAaRya3kj28IDnLVKViivoK5WxC0MzDRwcZV0/islgiYR1wEQe0CE2t+NK+03iiexpWTzNdiG/EYxv3+w==",
+  "_integrity": "sha512-N9666S8z9iRCqoZgUOxrzL874TC5iUuGL++FjN+EOuE5lHdaVWfFx/+z5OC1JuMMnsa3IvaDv1f8ALatvFSuYQ==",
   "_location": "/iobroker.rfmapper",
   "_phantomChildren": {
     "@types/node": "14.0.1"
   },
   "_requested": {
     "type": "remote",
-    "raw": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
-    "rawSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
-    "saveSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
-    "fetchSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5"
+    "raw": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
+    "rawSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
+    "saveSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
+    "fetchSpec": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
-  "_shasum": "4984b707bf9c2098aa94a1001b71b55ceb3f43ff",
-  "_spec": "https://github.com/Nexder/iobroker.rfmapper/tarball/bd1720c7b867f683d11a540d78bbed719c3957a5",
+  "_resolved": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
+  "_shasum": "491a99c20f783ad5782e3bae069a2d8e77c52cff",
+  "_spec": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a",
   "_where": "/",
   "author": {
     "name": "Nexder",

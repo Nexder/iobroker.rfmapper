@@ -34,10 +34,11 @@ adapter.on('ready', function()
 		mqttClient.subscribe('tele/RFCodes/RESULT');
 	});
 
-	mqttClient.on('message', async function (topic, message) 
+	mqttClient.on('message', function (topic, message) 
 	{
 		try
 		{
+			adapter.log.debug(`Incoming Message ${message}`);
 			var payload = JSON.parse(message);
 			var code = payload.RfReceived.Data;
 			adapter.log.debug(`Incoming Code ${code}`);
@@ -55,9 +56,9 @@ adapter.on('ready', function()
 				},
 				native: {},
 			});
-			adapter.setStateAsync(`Last incoming code`, { val: `${code}`, ack: true });
+			adapter.setStateAsync(`Last incoming code`, { val: `${code}`.trim(), ack: true });
 			// Eingehende Signale auswerten
-			await UpdateDeviceByCode(`${code}`);
+			UpdateDeviceByCode(`${code}`.trim());
 			//adapter.log.debug(`stdout: ${data}`);
 		}
 		catch (ex)
@@ -94,26 +95,26 @@ adapter.on('objectChange', function(id, obj)
 	if (obj) 
 	{	
 		// The object was changed
-		adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+		//adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
 	} 
 	else 
 	{
 		// The object was deleted
-		adapter.log.info(`object ${id} deleted`);
+		//adapter.log.info(`object ${id} deleted`);
 	}	
 });
 
-adapter.on('stateChange', async function(id, state)
+adapter.on('stateChange', function(id, state)
 {
 	if (state) 
 	{
 		if (state.ack == false)
 		{
-			adapter.log.debug(`Start SendCodeByID`);
-			await SendCodeByID(id.split('.').pop(), state.val);
+			//adapter.log.debug(`Start SendCodeByID`);
+			SendCodeByID(id.split('.').pop(), state.val);
 		}
 		// The state was changed
-		adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+		//adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 	} 
 	else 
 	{
@@ -142,7 +143,7 @@ function CheckTimer()
 {
 	try
 	{
-		adapter.log.debug('check all Timer');
+		//adapter.log.debug('check all Timer');
 		let foundtimer = false;
 		// Regelmäßig alle Devices durchgehen und prüfen, ob ein Timer aktiv ist
 		for (let k = 0; k < adapter.config.devices.length; k++) 
@@ -165,7 +166,7 @@ function CheckTimer()
 		if (!foundtimer)
 		{
 			// Timer stoppen, wenn kein Akteur einen aktiven Timer besitzt
-			adapter.log.debug('deactivate Timer');
+			adapter.log.debug('No Timer is Active - Disable Main-Timer');
 			clearInterval(timer);
 			timerIsActive = false;
 		}
@@ -196,19 +197,18 @@ async function AddOrUpdateObject(device, state)
 		});
 		if (state == false || !device.timer)
 		{
-			adapter.log.debug(`Set normal`);
-			await adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
+			//adapter.log.debug(`Set normal`);
+			adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
 		}
 		else
 		{
 			if (!device.timerIsActive)
 			{
-				adapter.log.debug(`start device timer`);					
+				//adapter.log.debug(`start device timer`);					
 				device.timerTimeEnd = new Date().getTime() + (device.timer * 1000);
 				device.timerIsActive = true;
-				adapter.log.debug(`Set with timer ${device.timer}s`);
-				//await adapter.setStateAsync(`${device.name}`, { val: state, ack: true, expire: device.timer });
-				await adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
+				//adapter.log.debug(`Set with timer ${device.timer}s`);
+				adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
 				if(!timerIsActive)
 				{
 					timerIsActive = true;
@@ -229,11 +229,11 @@ async function AddOrUpdateObject(device, state)
 	}
 }
 
-async function UpdateDeviceByCode(code)
+function UpdateDeviceByCode(code)
 {
 	try
 	{
-		adapter.log.debug('Search Device');
+		//adapter.log.debug('Search Device');
 		if (!adapter.config.devices.length) 
 		{
 			adapter.log.warn('No Device configured');
@@ -243,19 +243,19 @@ async function UpdateDeviceByCode(code)
 			for (let k = 0; k < adapter.config.devices.length; k++) 
 			{
 				const device = adapter.config.devices[k];
-				adapter.log.debug(`Device ${device.id}`);
-				adapter.log.debug(`CodeOn ${device.codeOn}`);
-				adapter.log.debug(`Code ${code}`);
+				//adapter.log.debug(`Device ${device.id}`);
+				//adapter.log.debug(`CodeOn ${device.codeOn}`);
+				//adapter.log.debug(`Code ${code}`);
 				
 				if (device.codeOn == code)
 				{
 					adapter.log.debug(`Incoming Turn On ${device.id}`);
-					await AddOrUpdateObject(device, true);
+					AddOrUpdateObject(device, true);
 				}
 				else if (device.codeOff == code)
 				{
 					adapter.log.debug(`Incoming Turn Off ${device.id}`);
-					await AddOrUpdateObject(device, false);
+					AddOrUpdateObject(device, false);
 				}
 			}
 		}				
@@ -266,11 +266,11 @@ async function UpdateDeviceByCode(code)
 	}
 }
 
-async function SendCodeByID(name, state)
+function SendCodeByID(name, state)
 {
 	try
 	{
-		adapter.log.debug('Search Send-Device');
+		//adapter.log.debug('Search Send-Device');
 		if (!adapter.config.devices.length) 
 		{
 			adapter.log.warn('No Device configured');
@@ -280,9 +280,9 @@ async function SendCodeByID(name, state)
 			for (let k = 0; k < adapter.config.devices.length; k++) 
 			{
 				const device = adapter.config.devices[k];
-				adapter.log.debug(`Device ${device.id}`);
-				adapter.log.debug(`Code ${state}`);
-				adapter.log.debug(`Name ${name}`);
+				//adapter.log.debug(`Device ${device.id}`);
+				//adapter.log.debug(`Code ${state}`);
+				//adapter.log.debug(`Name ${name}`);
 				
 				if (device.id == name)
 				{
@@ -290,14 +290,11 @@ async function SendCodeByID(name, state)
 					{
 						adapter.log.debug(`Outgoing Turn On ${device.id} - ${device.codeOn}`);
 						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOn}`)
-						//await exec(`${adapter.config.CodeSendPath} ${device.codeOn}`);
-						// /home/pi/433Utils/RPi_utils/codesend 
 					}
 					else if (!state)
 					{
 						adapter.log.debug(`Outgoing Turn OFF ${device.id} - ${device.codeOff}`);
 						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOff}`)
-						//await exec(`${adapter.config.CodeSendPath} ${device.codeOff}`);
 					}
 				}
 			}
