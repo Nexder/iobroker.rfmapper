@@ -70,7 +70,7 @@
         "js-controller": ">=1.4.2"
       }
     ],
-    "installedFrom": "https://github.com/Nexder/iobroker.rfmapper/tarball/0161bebb817d440786b0cbe9a10d75b021b3159a"
+    "installedFrom": "https://github.com/Nexder/iobroker.rfmapper/tarball/795ef3fb73dd333bfa1a9b80fb23033d4d827f06"
   },
   "native": {
     "devices": []

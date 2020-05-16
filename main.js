@@ -1,11 +1,5 @@
 'use strict';
 
-/*
- * Created with @iobroker/create-adapter v1.21.1
- */
-
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const { spawn, exec } = require('child_process');
 const mqtt = require('mqtt')
@@ -22,16 +16,16 @@ adapter.on('ready', function()
 {
 	adapter.log.debug('connecting mqtt');
 	mqttClient = mqtt.connect({
-		host: '192.168.69.170',
-		port: 1883,
-		username: 'mqttuser',
-		password: 'hH3ASVueUyyXUYgQilDn'
+		host: `${adapter.config.MQTTServer}`,
+		port: adapter.config.MQTTPort,
+		username: `${adapter.config.MQTTUser}`,
+		password: `${adapter.config.MQTTPassword}`
 	});
 
 	mqttClient.on('connect', function () 
 	{
 		adapter.log.debug('MQTT Connected');
-		mqttClient.subscribe('tele/RFCodes/RESULT');
+		mqttClient.subscribe(adapter.config.MQTTTopic);
 	});
 
 	mqttClient.on('message', function (topic, message) 
@@ -59,7 +53,6 @@ adapter.on('ready', function()
 			adapter.setStateAsync(`Last incoming code`, { val: `${code}`.trim(), ack: true });
 			// Eingehende Signale auswerten
 			UpdateDeviceByCode(`${code}`.trim());
-			//adapter.log.debug(`stdout: ${data}`);
 		}
 		catch (ex)
 		{
@@ -90,20 +83,6 @@ adapter.on('ready', function()
 	adapter.subscribeStates('*');	
 });
 
-adapter.on('objectChange', function(id, obj)
-{
-	if (obj) 
-	{	
-		// The object was changed
-		//adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-	} 
-	else 
-	{
-		// The object was deleted
-		//adapter.log.info(`object ${id} deleted`);
-	}	
-});
-
 adapter.on('stateChange', function(id, state)
 {
 	if (state) 
@@ -113,8 +92,6 @@ adapter.on('stateChange', function(id, state)
 			//adapter.log.debug(`Start SendCodeByID`);
 			SendCodeByID(id.split('.').pop(), state.val);
 		}
-		// The state was changed
-		//adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 	} 
 	else 
 	{
@@ -143,7 +120,6 @@ function CheckTimer()
 {
 	try
 	{
-		//adapter.log.debug('check all Timer');
 		let foundtimer = false;
 		// Regelmäßig alle Devices durchgehen und prüfen, ob ein Timer aktiv ist
 		for (let k = 0; k < adapter.config.devices.length; k++) 
@@ -197,17 +173,14 @@ function AddOrUpdateObject(device, state)
 		});
 		if (state == false || !device.timer)
 		{
-			//adapter.log.debug(`Set normal`);
 			adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
 		}
 		else
 		{
 			if (!device.timerIsActive)
-			{
-				//adapter.log.debug(`start device timer`);					
+			{		
 				device.timerTimeEnd = new Date().getTime() + (device.timer * 1000);
 				device.timerIsActive = true;
-				//adapter.log.debug(`Set with timer ${device.timer}s`);
 				adapter.setStateAsync(`${device.id}`, { val: state, ack: true });
 				if(!timerIsActive)
 				{
@@ -233,7 +206,6 @@ function UpdateDeviceByCode(code)
 {
 	try
 	{
-		//adapter.log.debug('Search Device');
 		if (!adapter.config.devices.length) 
 		{
 			adapter.log.warn('No Device configured');
@@ -243,10 +215,6 @@ function UpdateDeviceByCode(code)
 			for (let k = 0; k < adapter.config.devices.length; k++) 
 			{
 				const device = adapter.config.devices[k];
-				//adapter.log.debug(`Device ${device.id}`);
-				//adapter.log.debug(`CodeOn ${device.codeOn}`);
-				//adapter.log.debug(`Code ${code}`);
-				
 				if (device.codeOn == code)
 				{
 					adapter.log.debug(`Incoming Turn On ${device.id}`);
@@ -282,7 +250,6 @@ function SendCodeByID(name, state)
 {
 	try
 	{
-		//adapter.log.debug('Search Send-Device');
 		if (!adapter.config.devices.length) 
 		{
 			adapter.log.warn('No Device configured');
@@ -292,24 +259,20 @@ function SendCodeByID(name, state)
 			for (let k = 0; k < adapter.config.devices.length; k++) 
 			{
 				const device = adapter.config.devices[k];
-				//adapter.log.debug(`Device ${device.id}`);
-				//adapter.log.debug(`Code ${state}`);
-				//adapter.log.debug(`Name ${name}`);
-				
 				if (device.id == name)
 				{
 					if (state)
 					{
 						adapter.log.debug(`Outgoing Turn On ${device.id} - ${device.codeOn}`);
 						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOn}`);
-						sleep(100);
+						sleep(adapter.config.RFSendDelay);
 						adapter.log.debug(`Completed Turn On ${device.id} - ${device.codeOn}`);
 					}
 					else if (!state)
 					{
 						adapter.log.debug(`Outgoing Turn OFF ${device.id} - ${device.codeOff}`);
 						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOff}`);
-						sleep(100);
+						sleep(adapter.config.RFSendDelay);
 						adapter.log.debug(`Completed Turn OFF ${device.id} - ${device.codeOn}`);
 					}
 				}

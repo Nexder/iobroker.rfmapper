@@ -60,12 +60,16 @@
 	{
         if (!settings) return;
 		
-		if (settings.SnifferPath === undefined) {
-            settings.SnifferPath = '/home/pi/433Utils/RPi_utils/RFSniffer';
+		if (settings.MQTTTopic === undefined) {
+            settings.MQTTTopic = '/tele/sonoff/RESULT';
         }
-		if (settings.CodeSendPath === undefined) {
-            settings.CodeSendPath = '/home/pi/433Utils/RPi_utils/codesend';
+		if (settings.RFSendDelay === undefined) {
+            settings.RFSendDelay = 100;
         }
+		if (settings.MQTTPort === undefined) {
+            settings.MQTTPort = 1883;
+        }		
+		
 
         devices = settings.devices || [];
 
@@ -113,53 +117,95 @@
     .error {
         border: 2px solid red;
     }
+	
+	.sub-title {
+        margin-top: 2rem!important;
+        padding: 0.5rem;
+        background: #64b5f6;
+        color: white;
+    }
+    .main-page {
+        height: 100%;
+        overflow: hidden;
+        margin-bottom: 0 !important;
+    }
+    .page {
+        height: calc(100% - 34px) !important;
+    }
 </style>
 </head>
 <body>
 <div class="m adapter-container">
-    <div class="row">
+    <div class=" main-page row">
+		<div class="col s12">
+			<ul class="tabs">
+				<li class="tab col s4"><a href="#tab-main" class="translate active">Connection</a></li>
+				<li class="tab col s4"><a href="#tab-devices" class="translate">Devices</a></li>
+			</ul>
+		</div>
         <div id="tab-main" class="col s12 page">
             <div class="row">
-                <div class="col s12 m4 l2">
+                <div class="col s6">
                     <img src="rfmapper.png" class="logo">
                 </div>
-				<table>
-					<tr>
-						<td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">433Utils Bridge - adapter settings</h3></td>
-					</tr>
-				</table>
-				<h4 class="translate">Basic settings</h4>
-				<table>
-					<tr>
-						<td><label class="translate" for="SnifferPath">Path To RFSniffer:</label></td>
-						<td class="admin-icon"></td><td><input class="value" id="SnifferPath" /></td>
-					</tr>
-					<tr>
-						<td><label class="translate" for="CodeSendPath">Path To CodeSend:</label></td>
-						<td class="admin-icon"></td><td><input class="value" id="CodeSendPath" /></td>
-					</tr>
-				</table>
-				<h4 class="translate">Devices</h4>
-				<div id="values" style="width: 100%; height: calc(100% - 230px)">
-					<button class="table-button-add" style="margin-left: 10px; width: 1.5em; height: 1.5em"></button>
-					<div style="width: 100%; height: calc(100% - 30px); overflow: auto;">
-						<table class="table-values" style="width: 100%;">
-							<thead>
-							<tr>
-								<th data-name="_index" style="width: 40px" class="translate"></th>
-								<th data-name="id" style="width: 30%" class="translate">ID</th>
-								<th data-name="name" style="width: 30%" class="translate">Name</th>
-								 <th data-name="codeOn" class="translate">Code-On</th>
-								<th data-name="codeOff" class="translate">Code-Off</th>
-								<th data-name="timer" class="translate">Timer in sec</th>
-								<th data-buttons="delete" style="width: 40px"></th>
-							</tr>
-							</thead>
-						</table>
-					</div>
+			</div>
+			<h6 class="translate sub-title">MQTT Connection settings</h6>
+			<div class="row">
+				<div class="input-field col s12 m6 l4" id="MQTTServer">
+					<input id="MQTTServer" type="text" size="17" class="value" />
+					<label class="translate" for="bind">IP address</label>
 				</div>
-            </div>
-        </div>
+				<div class="input-field col s12 m6 l4">
+					<input id="MQTTPort" type="number" min="1" max="65565" class="value" />
+					<label class="translate" for="MQTTPort">Port:</label>
+				</div>
+			</div>
+			<h6 class="translate sub-title">Authentication settings</h6>
+			<div class="row">
+				<div class="input-field col s12 m6 l4">
+					<input id="MQTTUser" type="text" size="17" class="value" />
+					<label class="translate" for="MQTTUser">User:</label>
+				</div>
+				<div class="input-field col s12 m6 l4">
+					<input id="MQTTPassword" type="password" size="17" class="value" />
+					<label class="translate" for="MQTTPassword">Password:</label>
+				</div>
+			</div>
+			<h6 class="translate sub-title">MQTT settings</h6>
+			<div class="row">
+				<div class="input-field col s12 m6 l4">
+					<input id="MQTTTopic" type="text" size="17" class="value" />
+					<label class="translate" for="MQTTTopic">Status-Topic</label>
+				</div>
+			</div>
+			<h6 class="translate sub-title">RF settings</h6>
+			<div class="row">
+				<div class="input-field col s12 m6 l4">
+					<input id="RFSendDelay" type="number" min="1" max="5000" class="value" />
+					<label class="translate" for="RFSendDelay">Minimal delay between outgoing codes</label>
+				</div>
+			</div>
+		</div>
+		<div id="tab-devices" class="col s12 page">
+			<div class="row" id="values" style="width: 100%; height: calc(100% - 50px)">
+				<button class="table-button-add small-button m" title="Add Device"><i class="material-icons">add_circle_outline</i></button>
+				<div style="width: 100%; height: calc(100% - 30px); overflow: auto;">
+					<table class="table-values" style="width: 100%;">
+						<thead>
+						<tr>
+							<th data-name="_index" style="width: 40px" class="translate"></th>
+							<th data-name="id" style="width: 30%" class="translate">ID</th>
+							<th data-name="name" style="width: 30%" class="translate">Name</th>
+							 <th data-name="codeOn" class="translate">Code-On</th>
+							<th data-name="codeOff" class="translate">Code-Off</th>
+							<th data-name="timer" class="translate">Timer in sec</th>
+							<th data-buttons="delete" style="width: 40px"></th>
+						</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
     </div>
 </div>
 </body>
