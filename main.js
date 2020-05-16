@@ -297,7 +297,7 @@ function SendMQTTCommands()
 	if (msg)
 	{
 		adapter.log.debug(`Sending - ${msg}`);	
-		mqttClient.publish('cmnd/RFCodes/Backlog', msg);
+		mqttClient.publish(adapter.config.MQTTCmdTopic, msg);
 	}
 	else
 	{

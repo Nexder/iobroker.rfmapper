@@ -63,6 +63,9 @@
 		if (settings.MQTTTopic === undefined) {
             settings.MQTTTopic = '/tele/sonoff/RESULT';
         }
+		if (settings.MQTTCmdTopic === undefined) {
+            settings.MQTTCmdTopic = 'cmnd/sonoff/Backlog';
+        }
 		if (settings.RFSendDelay === undefined) {
             settings.RFSendDelay = 100;
         }
@@ -176,6 +179,10 @@
 				<div class="input-field col s12 m6 l4">
 					<input id="MQTTTopic" type="text" size="17" class="value" />
 					<label class="translate" for="MQTTTopic">Status-Topic</label>
+				</div>
+				<div class="input-field col s12 m6 l4">
+					<input id="MQTTCmdTopic" type="text" size="17" class="value" />
+					<label class="translate" for="MQTTCmdTopic">Command-Topic</label>
 				</div>
 			</div>
 			<h6 class="translate sub-title">RF settings</h6>
