@@ -6,10 +6,11 @@ const mqtt = require('mqtt')
 
 var adapter = utils.adapter('rfmapper'); // - mandatory
 
-let timer;
-let timerIsActive = false;
+let timer, mqttSendTimer;
+let timerIsActive, mqttTimerIsActive = false;
 let mqttClient;
 
+var mqttSendStack = [];
 
 
 adapter.on('ready', function()
@@ -104,6 +105,7 @@ adapter.on('unload', function()
 {
 	try 
 	{
+		clearInterval(mqttSendTimer);
 		clearInterval(timer);
 		adapter.log.info('cleaned everything up...');
 		callback();
@@ -263,24 +265,45 @@ function SendCodeByID(name, state)
 				{
 					if (state)
 					{
-						adapter.log.debug(`Outgoing Turn On ${device.id} - ${device.codeOn}`);
-						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOn}`);
-						sleep(adapter.config.RFSendDelay);
-						adapter.log.debug(`Completed Turn On ${device.id} - ${device.codeOn}`);
+						adapter.log.debug(`Queue Turn On ${device.id} - ${device.codeOn}`);
+						mqttSendStack.push(`RfCode #${device.codeOn}`);
 					}
 					else if (!state)
 					{
-						adapter.log.debug(`Outgoing Turn OFF ${device.id} - ${device.codeOff}`);
-						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOff}`);
-						sleep(adapter.config.RFSendDelay);
-						adapter.log.debug(`Completed Turn OFF ${device.id} - ${device.codeOn}`);
+						adapter.log.debug(`Queue Turn OFF ${device.id} - ${device.codeOff}`);
+						mqttSendStack.push(`RfCode #${device.codeOff}`);						
+					}
+					
+					// Using Quenue to send multiple incoming State-Changes to the RF-MQTT Client.
+					// Too fast misses Codes to send
+					if(!mqttTimerIsActive)
+					{
+						mqttTimerIsActive = true;
+						mqttSendTimer = setInterval(SendMQTTCommands.bind(this), adapter.config.RFSendDelay);
 					}
 				}
-			}
+			} 
 		}
 	}
 	catch (ex)
 	{			
 		adapter.log.error(ex);
+	}
+}
+
+function SendMQTTCommands()
+{
+	var msg = mqttSendStack.pop();
+	if (msg)
+	{
+		adapter.log.debug(`Sending - ${msg}`);	
+		mqttClient.publish('cmnd/RFCodes/Backlog', msg);
+	}
+	else
+	{
+		// Timer stoppen, wenn kein Befehl mehr in der Quenue stehen
+		adapter.log.debug('No MQTTCommand left - Disable MQTTSend-Timer');
+		clearInterval(mqttSendTimer);
+		mqttTimerIsActive = false;
 	}
 }
