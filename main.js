@@ -177,7 +177,7 @@ function CheckTimer()
 	}
 };
 
-async function AddOrUpdateObject(device, state)
+function AddOrUpdateObject(device, state)
 {
 	try
 	{
@@ -266,6 +266,18 @@ function UpdateDeviceByCode(code)
 	}
 }
 
+function sleepAsync(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
 function SendCodeByID(name, state)
 {
 	try
@@ -289,12 +301,16 @@ function SendCodeByID(name, state)
 					if (state)
 					{
 						adapter.log.debug(`Outgoing Turn On ${device.id} - ${device.codeOn}`);
-						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOn}`)
+						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOn}`);
+						sleep(100);
+						adapter.log.debug(`Completed Turn On ${device.id} - ${device.codeOn}`);
 					}
 					else if (!state)
 					{
 						adapter.log.debug(`Outgoing Turn OFF ${device.id} - ${device.codeOff}`);
-						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOff}`)
+						mqttClient.publish('cmnd/RFCodes/Backlog', `RfCode #${device.codeOff}`);
+						sleep(100);
+						adapter.log.debug(`Completed Turn OFF ${device.id} - ${device.codeOn}`);
 					}
 				}
 			}
