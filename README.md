@@ -1,60 +1,25 @@
-![Logo](admin/rf433utils.png)
-# ioBroker.rf433utils
+![Logo](admin/rfmapper.png)
+# ioBroker.rfmapper
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.template.svg)](https://www.npmjs.com/package/iobroker.template)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.template.svg)](https://www.npmjs.com/package/iobroker.template)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.template.svg)](https://www.npmjs.com/package/iobroker.rfmapper)
 ![Number of Installations (latest)](http://iobroker.live/badges/template-installed.svg)
 ![Number of Installations (stable)](http://iobroker.live/badges/template-stable.svg)
 [![Dependency Status](https://img.shields.io/david/Author/iobroker.template.svg)](https://david-dm.org/Nexder/iobroker.rf433utils)
 [![Known Vulnerabilities](https://snyk.io/test/github/Nexder/ioBroker.rf433utils/badge.svg)](https://snyk.io/test/github/Author/ioBroker.template)
 
-[![NPM](https://nodei.co/npm/iobroker.rf433utils.png?downloads=true)](https://nodei.co/npm/iobroker.rf433utils/)
+[![NPM](https://nodei.co/npm/iobroker.rfmapper.png?downloads=true)](https://nodei.co/npm/iobroker.rfmapper/)
 
-## rf433utils adapter for ioBroker
-The rf433utils adapter is for getting access to local installed rf-receiver and sender, which are able to control by [433Utils](https://github.com/ninjablocks/433Utils) from Ninjablocks.
-
-With the adapter you are able to define devices with theire on- and offswitch code and read/send code to an from them.
-
+## rfmapper adapter for ioBroker
 
 
 ## Installation
 
-### Hardware
-
-##### Raspberry Pi
-
-- Receiver DATA -> GPIO17
-- Sender DATA -> GPIO2  
-  - Raspberry Rev.1 -> GPIO pin 21 
-  - Raspberry Rev2 -> GPIO pin 27
-
-
-
 ### Software
-
-1. Install Wiring Pi
-
-```
-cd ~/
-git clone https://github.com/WiringPi/WiringPi   
-cd wiringPi
-./build
-```
-
-2. Install 433Utils
-
-```
-cd ~/
-git clone git://github.com/ninjablocks/433Utils.git --recursive 
-cd 433Utils/RPi_utils
-make
-```
 
 
 
 ## Configuration
-
-Point the fullpath to RFSniffer and codesend scripts to the 433Utils installation.
 
 
 
