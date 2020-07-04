@@ -254,12 +254,12 @@ function SendCodeByID(name, state)
 					if (state)
 					{
 						adapter.log.debug(`Queue Turn On ${device.id} - ${device.codeOn}`);
-						mqttSendStack.push(`RfCode #${device.codeOn}`);
+						mqttSendStack.push(`RfCode ${device.codeOn}`);
 					}
 					else if (!state)
 					{
 						adapter.log.debug(`Queue Turn OFF ${device.id} - ${device.codeOff}`);
-						mqttSendStack.push(`RfCode #${device.codeOff}`);						
+						mqttSendStack.push(`RfCode ${device.codeOff}`);						
 					}
 					
 					// Using Quenue to send multiple incoming State-Changes to the RF-MQTT Client.

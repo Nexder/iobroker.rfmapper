@@ -46,6 +46,9 @@ Sollte das Gerät während der Timer-Zeit erneut Signale senden, beginnt der Tim
 
 
 Über das Objekt "Last incoming code" kann jederzeit das aktuell empfangene Signal ermittelt werden.
+Einige Funkfernbedienungen senden in einem Schaltprozess oft ein "Schlusssignal", welches dann Final durch die RFBridge dargestellt wird.
+Das führt dazu, dass das eigentliche Ein-/Ausschaltsignal nicht angezeigt wird.
+Daher empfehle ich zum Sniffen der Signale die Verwendung eines extra 433 Empfängers und den 433Utils, da diese deutlich mehr empfangene Signale protokollieren und man so leichter das richtige Schaltsignal ermitteln kann.
 
 
 
