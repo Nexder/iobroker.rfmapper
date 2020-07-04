@@ -49,8 +49,8 @@ Sollte das Gerät während der Timer-Zeit erneut Signale senden, beginnt der Tim
 Einige Funkfernbedienungen senden in einem Schaltprozess oft ein "Schlusssignal", welches dann Final durch die RFBridge dargestellt wird.
 Das führt dazu, dass das eigentliche Ein-/Ausschaltsignal nicht angezeigt wird.
 Daher empfehle ich zum Sniffen der Signale die Verwendung eines extra 433 Empfängers und den 433Utils, da diese deutlich mehr empfangene Signale protokollieren und man so leichter das richtige Schaltsignal ermitteln kann.
-
-
+Um die Signale bei der Verwendung der 433Utils einfacher übertragen zu können empfehle ich ebenfalls, den Betrieb der Tasmota SonOFF Bridge in den Dezimalbetrieb (SetOption28 1) umszustellen.
+Sollte der Hexadezimale Betrieb gewünscht sein, muss der Code mit einer # vorangestellt werden.
 
 
 
