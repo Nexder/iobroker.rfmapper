@@ -1,5 +1,9 @@
 <html>
 <head>
+
+
+<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/default/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
@@ -10,6 +14,10 @@
 <script type="text/javascript" src="../../lib/js/materialize.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 <script type="text/javascript" src="words.js"></script>
+
+<script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../lib/js/selectID.js"></script>
+<script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
 
 
  <script type="text/javascript">
@@ -84,7 +92,7 @@
             }
         }
 
-        values2table('values', devices, onChange);
+        values2table('values', devices, onChange, tableOnReady);
 
         onChange(false);
     }
@@ -110,10 +118,67 @@
 
 		callback(obj);
     }
+	
+	function tableOnReady() 
+	{
+		$('.table-values-div .table-values .values-buttons[data-command="edit2"]').on('click', function () 
+		{
+			let id = $(this).data('index');
+			initSelectId(function (sid) 
+			{
+				sid.selectId('show', $('.values-input[data-name="condition"][data-index="' + id + '"]').val(), function (newId) 
+				{
+					$('.values-input[data-name="condition"][data-index="' + id + '"]').val(newId || '').trigger('change');
+				});
+			});
+		});
+	}
+	
+	var selectId;
+    function initSelectId (cb) 
+	{
+	    if (selectId) return cb(selectId);
+        socket.emit('getObjects', function (err, res) 
+		{
+            if (!err && res) 
+			{
+                selectId = $('#dialog-select-member').selectId('init',  
+				{
+                    noMultiselect: true,
+                    objects: res,
+                    imgPath:       '../../lib/css/fancytree/',
+                    filter:        {type: 'state'},
+                    name:          'rfmapper-select-state',
+                    texts: {
+                        select:          _('Select'),
+                        cancel:          _('Cancel'),
+                        all:             _('All'),
+                        id:              _('ID'),
+                        name:            _('Name'),
+                        role:            _('Role'),
+                        room:            _('Room'),
+                        value:           _('Value'),
+                        selectid:        _('Select ID'),
+                        from:            _('From'),
+                        lc:              _('Last changed'),
+                        ts:              _('Time stamp'),
+                        wait:            _('Processing...'),
+                        ack:             _('Acknowledged'),
+                        selectAll:       _('Select all'),
+                        unselectAll:     _('Deselect all'),
+                        invertSelection: _('Invert selection')
+                    },
+                    columns: ['image', 'name', 'role', 'room']
+                });
+                cb && cb(selectId);
+            }
+        });
+    }
+
 </script>
 
 <style>
-    .m .select-wrapper+label {
+    .select-wrapper+label {
         top: 100% !important;
     }
 
@@ -135,9 +200,16 @@
     .page {
         height: calc(100% - 34px) !important;
     }
+	
+	#dialog-select-member
+	{
+		top: 10px !important;
+	}
 </style>
 </head>
 <body>
+
+<div id="dialog-select-member" class="ui-dialog ui-widget ui-widget-content" style="display: none"></div>
 <div class="m adapter-container">
     <div class=" main-page row">
 		<div class="col s12">
@@ -196,18 +268,22 @@
 		<div id="tab-devices" class="col s12 page">
 			<div class="row" id="values" style="width: 100%; height: calc(100% - 50px)">
 				<button class="table-button-add small-button m" title="Add Device"><i class="material-icons">add_circle_outline</i></button>
-				<div style="width: 100%; height: calc(100% - 30px); overflow: auto;">
+				<div class="table-values-div" style="width: 100%; height: calc(100% - 30px); overflow: auto;">
 					<table class="table-values" style="width: 100%;">
 						<thead>
-						<tr>
-							<th data-name="_index" style="width: 40px" class="translate"></th>
-							<th data-name="id" style="width: 30%" class="translate">ID</th>
-							<th data-name="name" style="width: 30%" class="translate">Name</th>
-							 <th data-name="codeOn" class="translate">Code-On</th>
-							<th data-name="codeOff" class="translate">Code-Off</th>
-							<th data-name="timer" class="translate">Timer in sec</th>
-							<th data-buttons="delete" style="width: 40px"></th>
-						</tr>
+							<tr>
+								<th data-name="_index" style="width: 40px" class="translate"></th>
+								<th data-name="id" style="width: 30%" class="translate">ID</th>
+								<th data-name="name" style="width: 30%" class="translate">Name</th>
+								
+								<th data-name="condition" style="width: 100px" class="translate">Condition ID</th>
+								<th data-buttons="edit2" style="width: 40px"></th>
+							
+								 <th data-name="codeOn" class="translate">Code-On</th>
+								<th data-name="codeOff" class="translate">Code-Off</th>
+								<th data-name="timer" class="translate">Timer in sec</th>
+								<th data-buttons="delete" style="width: 40px"></th>
+							</tr>
 						</thead>
 					</table>
 				</div>

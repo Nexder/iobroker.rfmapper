@@ -37,20 +37,36 @@ Dieses ist notwendig, damit sich Schaltbefehlt bei Zeitgleich veränderten Objek
 
 Über den Tab Devices können Geräte hinzugefügt werden um diese als Objekte schalten zu können.
 
-Dazu ist ein Name des Gerätes und seine Ein- bzw. Ausschaltcodes zu hinterlegen.
+##### ID
+Eindeutige ID des Gerätes. Biem Neuanlegen repräsentiert dies ebenfalls die ObjectID und kann nachträglich nicht verändert werden, bzw. führt zur Neuanlage mit der entsprechenden ID.
 
-Speziell für Bewegungsmelder, oder Taster, die i.d.R. nur über einen "Einschalt-" Code verfügen, kann in der Spalte "Timer in sec" eine Zeitspanne in Sekunden angegeben werden, ab wann sich das Objekt wieder auf "false" schalten soll.
+##### Name
+Ein Name bzw. Beschreibung des Gerätes. Dient nur zur besseren Identifikation innerhalb dieser View.
 
+##### Condition ID
+In der Condition ID kann eine ObjectID hinterlegt werden, dessen State auf true stehen muss, damit das  Object bei eigehendem Signal auch wirklich geschaltet wird. Dies ist z.Bsp. sinnvoll um einen Bewegungsmelder nur dann zu Triggern, wenn z.Bsp. die ObjectID den Sonnenuntergang darstellt.  
+
+##### CodeOn / CodeOff
+Der entsprechende Ein- bzw. Ausschaltcode des Gerätes. 
+
+#####  Timer in sec
+Speziell für Bewegungsmelder, oder Taster, die i.d.R. nur über einen "Einschalt-" Code verfügen, kann in dieser Spalte eine Zeitspanne in Sekunden angegeben werden, ab wann sich das Objekt wieder auf "false" schalten soll.
+###### Timerreset
 Sollte das Gerät während der Timer-Zeit erneut Signale senden, beginnt der Timer von vorn.
 
 
 
+## Objekte
+##### Last incoming Code
 Über das Objekt "Last incoming code" kann jederzeit das aktuell empfangene Signal ermittelt werden.
 Einige Funkfernbedienungen senden in einem Schaltprozess oft ein "Schlusssignal", welches dann Final durch die RFBridge dargestellt wird.
 Das führt dazu, dass das eigentliche Ein-/Ausschaltsignal nicht angezeigt wird.
 Daher empfehle ich zum Sniffen der Signale die Verwendung eines extra 433 Empfängers und den 433Utils, da diese deutlich mehr empfangene Signale protokollieren und man so leichter das richtige Schaltsignal ermitteln kann.
 Um die Signale bei der Verwendung der 433Utils einfacher übertragen zu können empfehle ich ebenfalls, den Betrieb der Tasmota SonOFF Bridge in den Dezimalbetrieb (SetOption28 1) umszustellen.
 Sollte der Hexadezimale Betrieb gewünscht sein, muss der Code mit einer # vorangestellt werden.
+
+##### Geräte
+Unter dem Verzeichnis der Objekte werden alle in der Konfiguration erzeugten Geräte  beim Speichern angelegt.
 
 
 

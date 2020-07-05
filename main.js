@@ -220,7 +220,35 @@ function UpdateDeviceByCode(code)
 				if (device.codeOn == code)
 				{
 					adapter.log.debug(`Incoming Turn On ${device.id}`);
-					AddOrUpdateObject(device, true);
+					// Prüfen, ob das Gerät zum Einschalten eine Bedingung hat
+					if (device.condition)
+					{
+						adapter.log.debug(`Checking existing condition to ${device.condition}`);
+						// Bedingung auswerten
+						adapter.getForeignState(device.condition, function (err, obj) 
+						{
+							if (err) 
+							{
+								adapter.log.error(err);
+							} 
+							else 
+							{
+								if (obj.val)
+								{
+									AddOrUpdateObject(device, true);
+								}
+								else
+								{
+									adapter.log.debug(`Condition == false`);
+								}
+							}
+						});
+					}
+					else
+					{
+						adapter.log.debug(`Incoming Turn On ${device.id}`);
+						AddOrUpdateObject(device, true);
+					}
 				}
 				else if (device.codeOff == code)
 				{
