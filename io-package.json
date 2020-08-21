@@ -1,9 +1,13 @@
 {
   "common": {
     "name": "rfmapper",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "news": {
-      "0.0.1": {
+      "0.0.2": {
+        "en": "Added multi Bridge support",
+        "de": "Support für mehrere Bridges im Netzwerk hinzugefügt"
+      },
+	  "0.0.1": {
         "en": "initial release",
         "de": "Erstveröffentlichung",
         "ru": "Начальная версия",

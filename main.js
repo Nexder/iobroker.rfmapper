@@ -281,13 +281,19 @@ function SendCodeByID(name, state)
 				{
 					if (state)
 					{
-						adapter.log.debug(`Queue Turn On ${device.id} - ${device.codeOn}`);
-						mqttSendStack.push(`RfCode ${device.codeOn}`);
+						adapter.config.MQTTCmdTopic.split(';').forEach(topic => 
+						{
+							adapter.log.debug(`Queue Turn On ${device.id} - ${device.codeOn} to Topic ${topic}`);						
+							mqttSendStack.push(`${topic}|RfCode ${device.codeOn}`);	
+						});
 					}
 					else if (!state)
 					{
-						adapter.log.debug(`Queue Turn OFF ${device.id} - ${device.codeOff}`);
-						mqttSendStack.push(`RfCode ${device.codeOff}`);						
+						adapter.config.MQTTCmdTopic.split(';').forEach(topic => 
+						{
+							adapter.log.debug(`Queue Turn Off ${device.id} - ${device.codeOff} to Topic ${topic}`);						
+							mqttSendStack.push(`${topic}|RfCode ${device.codeOff}`);	
+						});					
 					}
 					
 					// Using Quenue to send multiple incoming State-Changes to the RF-MQTT Client.
@@ -309,11 +315,16 @@ function SendCodeByID(name, state)
 
 function SendMQTTCommands()
 {
-	var msg = mqttSendStack.pop();
-	if (msg)
+	var msgPart = mqttSendStack.pop();
+	if (msgPart)
 	{
-		adapter.log.debug(`Sending - ${msg}`);	
-		mqttClient.publish(adapter.config.MQTTCmdTopic, msg);
+		var msgSplit = msgPart.split('|');
+		var topic = msgSplit[0];
+		var msg = msgSplit[1];
+		
+		adapter.config.MQTTCmdTopic.split(';')
+		adapter.log.debug(`Sending - ${msg} to Topic ${topic}`);	
+		mqttClient.publish(topic, msg);
 	}
 	else
 	{

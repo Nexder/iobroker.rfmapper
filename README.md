@@ -19,11 +19,29 @@ Der RfMapper stellt eine unbeschränkte Verknüpfung von 433MHz-Geräten über e
 
 Zunächst müssen die Verbindungsdaten zum MQTT-Server eingetragen werden.
 
+
+
+##### Status-Topic
+
 Für den Status-Topic wird der Topic der MQTT-Nachricht hinterlegt, unter welcher die empfangenen RF-Codes der Bridge übermittelt werden.
 
 Die Nachricht sollte mindestens folgenden Payload besitzen:
 
 {"RfReceived":{"Data":"XXXXXXX"}}
+
+
+
+##### Command-Topic
+
+Der Command-Topic wird genutzt um die entsprechenden Ein- bzw. Ausschlatcodes an die Bridge zu senden.
+
+Beim Betrieb mehrere Bridges wird empfohlen, nicht den gemeinsamen Group-Topic aller Bridges zu nutzen, sondern jeden spezifischen Geräte-Topic mit einem Semikolon getrennt anzugeben.
+
+Dadurch werden die Befehle von jeder Bridge nacheinander gesendet.
+
+Das Zeitgleiche Senden der Befehle führt zu Interferenzen und zu deutlichen Instabilitäten.
+
+Der Delay sollte auch für diesen Fall nicht zu gering gewählt werden.
 
 
 
